@@ -529,4 +529,6 @@ const testArr = [
     }
 ];
 
+displayImages(arr1);
+
 
