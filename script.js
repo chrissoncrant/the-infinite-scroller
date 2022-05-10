@@ -1,67 +1,7 @@
 import API_KEY from './config.js';
 
 import { combinedArr, arr1 } from './photos.js';
-
-const imageContainer = document.getElementById('image-container');
-const loader = document.getElementById('loader');
-
-const COUNT = 30;
-const COLLECTION = 'nature';
-
-const API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}&collections=${COLLECTION}`;
-
-function setAttributes(element, attributes) {
-    for (const key in attributes) {
-        element.setAttribute(key, attributes[key])
-    }
-}
-
-function displayImages(photos) {
-    photos.forEach(photo => {
-        const img = document.createElement('img');
-        const imgLink = document.createElement('a');
-        const photoURL = photo.urls.raw;
-        const photoAlt = photo.alt_description;
-        setAttributes(img, {
-            src: photoURL,
-            alt: photoAlt,
-            title: photoAlt,
-        });
-        setAttributes(imgLink, {
-            href: photo.links.html,
-            target: '_blank',
-        });
-        imgLink.appendChild(img);
-        imageContainer.appendChild(imgLink);
-    })
-}
-
-function getImages() {
-    fetch(API_URL, {
-        headers: {
-            'Accept-Version': 'v1',
-            'Authorization': API_KEY
-        }
-    })
-        .then(response => response.json())
-        .then(response => {
-            console.log(response);
-            displayImages(response);
-        })
-        .catch(err => console.log(err));
-}
-
-window.addEventListener('scroll', e => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
-        // getImages();
-        displayImages(arr1);
-    }
-
-})
-
-// getImages();
-
-const testArr = [
+const smallPhotoArr = [
     {
         "id": "JNDHoXsvGpI",
         "created_at": "2022-03-19T05:45:16-04:00",
@@ -528,6 +468,92 @@ const testArr = [
         "downloads": 909
     }
 ];
+
+const imageContainer = document.getElementById('image-container');
+const loader = document.getElementById('loader');
+
+
+let ready = false;
+let imagesLoaded = 0;
+let totalImages = 0;
+
+let COUNT = 5;
+const COLLECTION = 'nature';
+
+let API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}&collections=${COLLECTION}`;
+
+function imageLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded > 4) {
+        loader.hidden = true;
+    };
+    if (imagesLoaded === totalImages) {
+        ready = true;
+        imagesLoaded = 0;
+        loader.hidden = true;
+        COUNT = 30;
+        API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}&collections=${COLLECTION}`;
+    };
+}
+
+function setAttributes(element, attributes) {
+    for (const key in attributes) {
+        element.setAttribute(key, attributes[key])
+    }
+}
+
+function displayImages(photos) {
+    totalImages = photos.length;
+    console.log('total images', totalImages);
+    photos.forEach(photo => {
+        const img = document.createElement('img');
+        const imgLink = document.createElement('a');
+        const photoURL = photo.urls.raw;
+        const photoAlt = photo.alt_description;
+        setAttributes(img, {
+            src: photoURL,
+            alt: photoAlt,
+            title: photoAlt,
+        });
+        setAttributes(imgLink, {
+            href: photo.links.html,
+            target: '_blank',
+        });
+        img.addEventListener('load', imageLoaded);
+        imgLink.appendChild(img);
+        imageContainer.appendChild(imgLink);
+    })
+}
+
+function getImages() {
+    fetch(API_URL, {
+        headers: {
+            'Accept-Version': 'v1',
+            'Authorization': API_KEY
+        }
+    })
+        .then(response => response.json())
+        .then(response => {
+            displayImages(response);
+        })
+        .catch(err => console.log(err));
+}
+
+window.addEventListener('scroll', e => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000 && ready) {
+        
+        //API Fetch Function:
+        // getImages();
+
+        //Loads static array:
+        displayImages(arr1);
+        ready = false;
+        
+    }
+
+})
+
+// getImages();
 
 displayImages(arr1);
 
