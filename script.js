@@ -478,9 +478,14 @@ let imagesLoaded = 0;
 let totalImages = 0;
 
 let COUNT = 5;
-const COLLECTION = 'nature';
 
-let API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}&collections=${COLLECTION}`;
+let API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}`;
+
+function initialLoader() {
+    if (initialLoad) {
+        IMAGE_COUNT
+    }
+}
 
 function imageLoaded() {
     imagesLoaded++;
@@ -492,7 +497,7 @@ function imageLoaded() {
         imagesLoaded = 0;
         loader.hidden = true;
         COUNT = 30;
-        API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}&collections=${COLLECTION}`;
+        API_URL = `https://api.unsplash.com/photos/random/?count=${COUNT}`;
     };
 }
 
@@ -504,7 +509,7 @@ function setAttributes(element, attributes) {
 
 function displayImages(photos) {
     totalImages = photos.length;
-    console.log('total images', totalImages);
+    // console.log('total images', totalImages);
     photos.forEach(photo => {
         const img = document.createElement('img');
         const imgLink = document.createElement('a');
